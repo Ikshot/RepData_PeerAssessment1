@@ -68,7 +68,7 @@ MeanStepsPerIntervalPlot <- function(arg_data, plot_color, xlab, ylab) {
     for (i in interval_iter) interval_steps_over_days[i] = mean(arg_data[arg_data$interval == 
         intervals[i], "steps"], na.rm = TRUE)
     plot(intervals, interval_steps_over_days, type = "l", col = plot_color, 
-        xlab = xlab, ylab = ylab)
+        xlab = xlab, ylab = ylab, las = 2, ylim = c(0, 250))
     return(interval_steps_over_days)
 }
 interval_steps_over_days = MeanStepsPerIntervalPlot(data, "darkblue", "Time Intervals", 
@@ -276,4 +276,4 @@ par(mfrow = c(1, 1))
 ```
 
 
-Subject moving much more actively at weekends. :)
+Subject moving more actively through the weekends overall, but wakes up later. :)
