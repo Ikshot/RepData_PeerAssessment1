@@ -61,12 +61,18 @@ Creating time series plot.
 
 
 ```r
-intervals = unique(data$interval)
-interval_steps_over_days = rep(0, length(intervals))
-interval_iter = 1:length(intervals)
-for (i in interval_iter) interval_steps_over_days[i] = mean(data[data$interval == 
-    intervals[i], "steps"], na.rm = TRUE)
-plot(intervals, interval_steps_over_days, type = "l", col = "darkblue")
+MeanStepsPerIntervalPlot <- function(arg_data, plot_color, xlab, ylab) {
+    intervals = unique(arg_data$interval)
+    interval_steps_over_days = rep(0, length(intervals))
+    interval_iter = 1:length(intervals)
+    for (i in interval_iter) interval_steps_over_days[i] = mean(arg_data[arg_data$interval == 
+        intervals[i], "steps"], na.rm = TRUE)
+    plot(intervals, interval_steps_over_days, type = "l", col = plot_color, 
+        xlab = xlab, ylab = ylab)
+    return(interval_steps_over_days)
+}
+interval_steps_over_days = MeanStepsPerIntervalPlot(data, "darkblue", "Time Intervals", 
+    "Mean Number of Steps")
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
@@ -77,6 +83,7 @@ Find 5-minute interval with maximum number of steps on average across all the da
 
 ```r
 max_interval_index = which(interval_steps_over_days == max(interval_steps_over_days))
+intervals = unique(data$interval)
 print(intervals[max_interval_index])
 ```
 
@@ -227,3 +234,46 @@ class(data2$date_POSIXlt)[1]
 ```
 
 
+Creating new column indicating "weekday" or "weekend".
+
+
+```r
+DayOrEnd <- function(wday) {
+    arg_size = length(wday)
+    res = rep("", arg_size)
+    for (i in 1:arg_size) # Sunday or Saturday
+    if (wday[i] == 0 || wday[i] == 6) 
+        res[i] = "weekend" else res[i] = "weekday"
+    return(res)
+}
+data2$de = DayOrEnd(data2$date_POSIXlt$wday)
+data2$de = as.factor(data2$de)
+```
+
+
+Split dataset in two: one for rows corresponding to weekdays and other for weekends.
+
+
+```r
+data2WD = data2[data2$de == "weekday", ]
+data2WE = data2[data2$de == "weekend", ]
+```
+
+
+Creating time series plots.
+
+
+```r
+par(mfrow = c(2, 1))
+MeanStepsPerIntervalPlot(data2WD, "red", "Weekdays Time Intervals", "Mean Number of Steps")
+MeanStepsPerIntervalPlot(data2WE, "orange", "Weekends Time Intervals", "Mean Number of Steps")
+```
+
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+
+```r
+par(mfrow = c(1, 1))
+```
+
+
+Subject moving much more actively at weekends. :)
